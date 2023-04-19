@@ -40,7 +40,7 @@ module.exports = function(RED) {
         text:  "publishing"
     };
 
-    const {PubSub} = require("@google-cloud/pubsub");
+    const PubSub = require("@google-cloud/pubsub");
 
     /**
      * Extract JSON service account key from "google-cloud-credentials" config node.
@@ -85,7 +85,8 @@ module.exports = function(RED) {
             await topicReady;
             node.status(STATUS_PUBLISHING);
             try {
-                await topic.publish(RED.util.ensureBuffer(msg.payload));
+                const publisher = topic.publisher()
+                await publisher.publish(RED.util.ensureBuffer(msg.payload));
                 node.status(STATUS_CONNECTED);
                 node.send(msg); // The message has been published so we can forward through the flow.
             }
